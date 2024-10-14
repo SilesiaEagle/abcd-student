@@ -86,8 +86,11 @@ while [ "$(docker inspect -f '{{.State.Status}}' $container_name)" != "running" 
     sleep 1
 done
 
-# Uruchom skanowanie Juice Shop
-docker exec $container_name bash -c "zap.sh -cmd -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml"
+# Zainstaluj dodatki i uruchom skanowanie przez docker exec
+docker exec $container_name zap.sh -cmd -addonupdate
+docker exec $container_name zap.sh -cmd -addoninstall communityScripts
+docker exec $container_name zap.sh -cmd -quickurl http://host.docker.internal:3000 \
+-quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml
 
 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
