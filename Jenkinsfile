@@ -62,25 +62,27 @@ echo "Kontener $container_name działa!"
         stage('DAST') {
             steps {
                 sh '''
-container_name="zap"
-volume_path="/mnt/c/Users/kosmi/_devsecops/abcd-student/.zap"
+                container_name="zap"
+                volume_path="/mnt/c/Users/kosmi/_devsecops/abcd-student/.zap"
 
-# Sprawdź, czy kontener już istnieje
-if [ "$(docker ps -a -q -f name=$container_name)" ]; then
-    echo "Kontener $container_name już istnieje. Usuwam go..."
-    docker rm -f $container_name
-fi
+                # Sprawdź, czy kontener już istnieje
+                if [ "$(docker ps -a -q -f name=$container_name)" ]; then
+                    echo "Kontener $container_name już istnieje. Usuwam go..."
+                    docker rm -f $container_name
+                fi
 
-# Tworzenie nowego kontenera i uruchomienie skanowania
-echo "Tworzę nowy kontener $container_name i uruchamiam skanowanie..."
-docker run --name $container_name \
-    -v $volume_path:/zap/wrk/:rw \
-    -t ghcr.io/zaproxy/zaproxy:stable \
-    bash -c "zap.sh -cmd -addonupdate && \
-             zap.sh -cmd -addoninstall communityScripts && \
-             zap.sh -cmd -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report.html -quickout /zap/wrk/report.xml"
+                # Tworzenie nowego kontenera i uruchomienie skanowania
+                echo "Tworzę nowy kontener $container_name i uruchamiam skanowanie..."
+                docker run --name $container_name \
+                    -v $volume_path:/zap/wrk/:rw \
+                    -t ghcr.io/zaproxy/zaproxy:stable \
+                    bash -c "zap.sh -cmd -addonupdate && \
+                            zap.sh -cmd -addoninstall communityScripts && \
+                            zap.sh -cmd -addoninstall pscanrulesAlpha && \
+                            zap.sh -cmd -addoninstall pscanrulesBeta && \
+                            zap.sh -cmd -autorun /zap/wrk/passive.yamk -quickurl http://host.docker.internal:3000 -quickprogress || true "
 
-echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
+                echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
             }
         }
