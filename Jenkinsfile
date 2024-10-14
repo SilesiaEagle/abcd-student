@@ -63,7 +63,6 @@ echo "Kontener $container_name działa!"
             steps {
                 sh '''
 container_name="zap"
-echo "container_name = $container_name"
 volume_path="/mnt/c/Users/kosmi/_devsecops/abcd-student/.zap"
 
 # Sprawdź, czy kontener już istnieje
@@ -72,23 +71,14 @@ if [ "$(docker ps -a -q -f name=$container_name)" ]; then
     docker rm -f $container_name
 fi
 
-# Tworzenie nowego kontenera ZAP w trybie demona
-echo "Tworzę nowy kontener $container_name..."
-docker run --name $container_name -d \
+# Tworzenie nowego kontenera i uruchomienie skanowania
+echo "Tworzę nowy kontener $container_name i uruchamiam skanowanie..."
+docker run --name $container_name \
     -v $volume_path:/zap/wrk/:rw \
-    ghcr.io/zaproxy/zaproxy:stable \
-    zap.sh -daemon -host 0.0.0.0
-
-# Pętla czekająca na status "running"
-while [ "$(docker inspect -f '{{.State.Status}}' $container_name)" != "running" ]; do
-    echo "Czekam, aż kontener $container_name będzie w trybie 'running'..."
-    sleep 1
-done
-
-# Zainstaluj dodatki i uruchom skanowanie przez docker exec
-docker exec $container_name zap.sh -cmd -addonupdate
-docker exec $container_name zap.sh -cmd -addoninstall communityScripts
-docker exec $container_name zap.sh -cmd -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml
+    -t ghcr.io/zaproxy/zaproxy:stable \
+    bash -c "zap.sh -cmd -addonupdate && \
+             zap.sh -cmd -addoninstall communityScripts && \
+             zap.sh -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml"
 
 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
