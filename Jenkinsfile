@@ -12,10 +12,21 @@ pipeline {
                 }
             }
         }
-        stage('Example') {
+        stage('Welcome message') {
             steps {
-                echo 'Hello!'
-                sh 'ls -la'
+                echo 'Hello Maciek!'
+            }
+        }
+
+        stage('Prepare') {
+            steps {
+                sh 'mkdir -p results'
+            }
+        }
+
+        stage ('DAST') {
+            steps {
+                sh 'docker run --name juice-shop -d --rm -p 3000:3000 bkimminich/juice-shop'
             }
         }
     }
