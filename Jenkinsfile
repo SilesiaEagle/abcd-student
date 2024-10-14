@@ -72,13 +72,12 @@ if [ "$(docker ps -a -q -f name=$container_name)" ]; then
     docker rm -f $container_name
 fi
 
-# Tworzenie nowego kontenera ZAP
+# Tworzenie nowego kontenera ZAP w trybie demona
 echo "Tworzę nowy kontener $container_name..."
-docker run --name $container_name \
+docker run --name $container_name -d \
     -v $volume_path:/zap/wrk/:rw \
-    -t ghcr.io/zaproxy/zaproxy:stable \
-    bash -c "zap.sh -daemon -cmd -addonupdate && \
-             zap.sh -daemon -cmd -addoninstall communityScripts"
+    ghcr.io/zaproxy/zaproxy:stable \
+    zap.sh -daemon -host 0.0.0.0
 
 # Pętla czekająca na status "running"
 while [ "$(docker inspect -f '{{.State.Status}}' $container_name)" != "running" ]; do
@@ -89,8 +88,7 @@ done
 # Zainstaluj dodatki i uruchom skanowanie przez docker exec
 docker exec $container_name zap.sh -cmd -addonupdate
 docker exec $container_name zap.sh -cmd -addoninstall communityScripts
-docker exec $container_name zap.sh -cmd -quickurl http://host.docker.internal:3000 \
--quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml
+docker exec $container_name zap.sh -cmd -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml
 
 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
