@@ -64,28 +64,21 @@ echo "Kontener $container_name działa!"
                 sh '''
 container_name="zap"
 echo "container_name = $container_name"
-
 volume_path="/mnt/c/Users/kosmi/_devsecops/abcd-student/.zap"
 
 # Sprawdź, czy kontener już istnieje
 if [ "$(docker ps -a -q -f name=$container_name)" ]; then
-    echo "Kontener $container_name już istnieje."
-
-    # Sprawdź, czy kontener jest w statusie "running"
-    if [ "$(docker inspect -f '{{.State.Status}}' $container_name)" = "running" ]; then
-        echo "Kontener $container_name już działa."
-    else
-        echo "Kontener $container_name istnieje, ale nie jest uruchomiony. Uruchamiam..."
-        docker start $container_name
-    fi
-else
-    echo "Kontener $container_name nie istnieje. Tworzę nowy kontener..."
-    docker run --name $container_name \
-        -v $volume_path:/zap/wrk/:rw \
-        -t ghcr.io/zaproxy/zaproxy:stable \
-        bash -c "zap.sh -daemon -cmd -addonupdate && \
-                 zap.sh -daemon -cmd -addoninstall communityScripts"
+    echo "Kontener $container_name już istnieje. Usuwam go..."
+    docker rm -f $container_name
 fi
+
+# Tworzenie nowego kontenera ZAP
+echo "Tworzę nowy kontener $container_name..."
+docker run --name $container_name \
+    -v $volume_path:/zap/wrk/:rw \
+    -t ghcr.io/zaproxy/zaproxy:stable \
+    bash -c "zap.sh -daemon -cmd -addonupdate && \
+             zap.sh -daemon -cmd -addoninstall communityScripts"
 
 # Pętla czekająca na status "running"
 while [ "$(docker inspect -f '{{.State.Status}}' $container_name)" != "running" ]; do
@@ -100,5 +93,6 @@ echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
             }
         }
+    }
     }
 }
