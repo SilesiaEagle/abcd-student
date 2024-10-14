@@ -78,7 +78,7 @@ docker run --name $container_name \
     -t ghcr.io/zaproxy/zaproxy:stable \
     bash -c "zap.sh -cmd -addonupdate && \
              zap.sh -cmd -addoninstall communityScripts && \
-             zap.sh -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml"
+             zap.sh -cmd -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report.html -quickoutxml /zap/wrk/report.xml"
 
 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
