@@ -82,7 +82,7 @@ pipeline {
                             zap.sh -cmd -addoninstall communityScripts && \
                             zap.sh -cmd -addoninstall pscanrulesAlpha && \
                             zap.sh -cmd -addoninstall pscanrulesBeta && \
-                            zap.sh -cmd -autorun /zap/wrk/passive.yaml -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report_$timestamp.xml || true "
+                            zap.sh -cmd -autorun /zap/wrk/passive.yaml -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report_$timestamp.html || true "
 
                 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
