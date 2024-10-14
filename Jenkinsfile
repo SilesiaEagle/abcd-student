@@ -29,32 +29,32 @@ pipeline {
         stage('Juice-Shop') {
             steps {
                 sh '''
-container_name="juice-shop"
-echo "container_name = $container_name"
+                container_name="juice-shop"
+                echo "container_name = $container_name"
 
-# Sprawdź, czy kontener już istnieje
-if [ "$(docker ps -a -q -f name=$container_name)" ]; then
-    echo "Kontener $container_name istnieje."
+                # Sprawdź, czy kontener już istnieje
+                if [ "$(docker ps -a -q -f name=$container_name)" ]; then
+                    echo "Kontener $container_name istnieje."
 
-    # Sprawdź, czy kontener jest w statusie "running"
-    if [ "$(docker inspect -f '{{.State.Status}}' $container_name)" = "running" ]; then
-        echo "Kontener $container_name już działa."
-    else
-        echo "Kontener $container_name istnieje, ale nie jest uruchomiony. Uruchamiam..."
-        docker start $container_name
-    fi
-else
-    echo "Kontener $container_name nie istnieje. Tworzę nowy kontener..."
-    docker run --name $container_name -d --rm -p 3000:3000 bkimminich/juice-shop
-fi
+                    # Sprawdź, czy kontener jest w statusie "running"
+                    if [ "$(docker inspect -f '{{.State.Status}}' $container_name)" = "running" ]; then
+                        echo "Kontener $container_name już działa."
+                    else
+                        echo "Kontener $container_name istnieje, ale nie jest uruchomiony. Uruchamiam..."
+                        docker start $container_name
+                    fi
+                else
+                    echo "Kontener $container_name nie istnieje. Tworzę nowy kontener..."
+                    docker run --name $container_name -d --rm -p 3000:3000 bkimminich/juice-shop
+                fi
 
-# Pętla czekająca na status "running"
-while [ "$(docker inspect -f '{{.State.Status}}' $container_name)" != "running" ]; do
-    echo "Czekam, aż kontener $container_name będzie w trybie 'running'..."
-    sleep 1
-done
+                # Pętla czekająca na status "running"
+                while [ "$(docker inspect -f '{{.State.Status}}' $container_name)" != "running" ]; do
+                    echo "Czekam, aż kontener $container_name będzie w trybie 'running'..."
+                    sleep 1
+                done
 
-echo "Kontener $container_name działa!"
+                echo "Kontener $container_name działa!"
                 '''
             }
         }
@@ -63,7 +63,9 @@ echo "Kontener $container_name działa!"
             steps {
                 sh '''
                 container_name="zap"
+                echo "container_name = $container_name"
                 volume_path="/mnt/c/Users/kosmi/_devsecops/abcd-student/.zap"
+                timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 
                 # Sprawdź, czy kontener już istnieje
                 if [ "$(docker ps -a -q -f name=$container_name)" ]; then
@@ -80,7 +82,7 @@ echo "Kontener $container_name działa!"
                             zap.sh -cmd -addoninstall communityScripts && \
                             zap.sh -cmd -addoninstall pscanrulesAlpha && \
                             zap.sh -cmd -addoninstall pscanrulesBeta && \
-                            zap.sh -cmd -autorun /zap/wrk/passive.yamk -quickurl http://host.docker.internal:3000 -quickprogress || true "
+                            zap.sh -cmd -autorun /zap/wrk/passive.yaml -quickurl http://host.docker.internal:3000 -quickout /zap/wrk/report_$timestamp.xml || true "
 
                 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
