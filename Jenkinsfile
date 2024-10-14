@@ -94,5 +94,5 @@ echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
             }
         }
     }
-    }
 }
+
