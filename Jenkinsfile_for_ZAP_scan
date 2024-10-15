@@ -74,23 +74,18 @@ pipeline {
                 #            zap.sh -cmd -addoninstall pscanrulesBeta && \
                 #            zap.sh -cmd -autorun /zap/wrk/passive.yaml || true "
                 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
+
+                cd ${WORKSPACE}
+                pwd
+                mkdir results
+                docker cp zap:/zap/wrk/reports/zap_html_report.html ${WORKSPACE}/results/zap_html_report.html
+                docker cp zap:/zap/wrk/reports/zap_xml_report.xml ${WORKSPACE}/results/zap_xml_report.xml
+
                 '''
             }
 
             post {
                 always {
-                    sh '''
-                        cd ${WORKSPACE}
-                        pwd
-                        mkdir results
-                        ls -l
-                        cd results
-                        docker cp zap:/zap/wrk/reports/zap_html_report.html ${WORKSPACE}/results/zap_html_report.html
-                        docker cp zap:/zap/wrk/reports/zap_xml_report.xml ${WORKSPACE}/results/zap_xml_report.xml
-                        ls -l
-                        #docker stop zap juice-shop
-                        #docker rm zap
-                    '''
                     Echo 'Archiving results'
                     archiveArtifacts artifacts: 'results/**/*',
                         allowEmptyArchive: true,
