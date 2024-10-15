@@ -16,14 +16,5 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            defectDojoPublisher(
-                artifact: '${WORKSPACE}/results/zap_xml_report.xml',
-                productName: 'Juice Shop',
-                scanType: 'ZAP passive scan',
-                engagementName: 'kosmider.maciej@gmail.com'
-            )
-        }
-    }
+    
 }
