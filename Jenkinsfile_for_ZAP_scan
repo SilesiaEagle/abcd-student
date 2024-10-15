@@ -92,7 +92,7 @@ pipeline {
                         #docker rm zap
                     '''
                     Echo 'Archiving results'
-                    archiveArtifacts artifacts: 'results/**/*', ,
+                    archiveArtifacts artifacts: 'results/**/*',
                         allowEmptyArchive: true,
                         fingerprint: true,
                         onlyIfSuccessful: true
