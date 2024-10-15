@@ -91,10 +91,13 @@ pipeline {
                         #docker stop zap juice-shop
                         #docker rm zap
                     '''
+
+                    archiveArtifacts artifacts: 'results/**/*', fingerprint: true; allowEmptyArchive: true
+
                     defectDojoPublisher(
                         artifact: '${WORKSPACE}/results/zap_xml_report.xml',
                         productName: 'Juice Shop',
-                        scanType: 'ZAP passive scan',
+                        scanType: 'ZAP scan',
                         engagementName: 'kosmider.maciej@gmail.com'
                     )
                 }
