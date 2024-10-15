@@ -19,7 +19,7 @@ pipeline {
     post {
         always {
             defectDojoPublisher(
-                artifact: '/mnt/c/Users/kosmi/_devsecops/abcd-student/.zap/reports/zap_xml_report.xml',
+                artifact: '${WORKSPACE}/results/zap_xml_report.xml',
                 productName: 'Juice Shop',
                 scanType: 'ZAP passive scan',
                 engagementName: 'kosmider.maciej@gmail.com'
