@@ -95,7 +95,7 @@ pipeline {
                     echo 'Sending results'
                     defectDojoPublisher(
                         artifact: '${WORKSPACE}/results/zap_xml_report.xml',
-                        productName: 'Juice Shop',
+                        productName: 'Juice Shop / MacKos / ZAP Scan',
                         scanType: 'ZAP Scan',
                         engagementName: 'kosmider.maciej@gmail.com'
                     )
