@@ -65,7 +65,6 @@ pipeline {
                 # Tworzenie nowego kontenera i uruchomienie skanowania
                 echo "Tworzę nowy kontener $container_name i uruchamiam skanowanie..."
 
-
                 echo "Skanowanie zakończone. Wyniki zapisane w katalogu: $volume_path"
                 '''
             }
