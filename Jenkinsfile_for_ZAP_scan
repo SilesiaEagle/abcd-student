@@ -91,9 +91,13 @@ pipeline {
                         #docker stop zap juice-shop
                         #docker rm zap
                     '''
+                    Echo 'Archiving results'
+                    archiveArtifacts artifacts: 'results/**/*', ,
+                        allowEmptyArchive: true,
+                        fingerprint: true,
+                        onlyIfSuccessful: true
 
-                    archiveArtifacts artifacts: 'results/**/*', fingerprint: true; allowEmptyArchive: true
-
+                    Echo 'Sending results'
                     defectDojoPublisher(
                         artifact: '${WORKSPACE}/results/zap_xml_report.xml',
                         productName: 'Juice Shop',
