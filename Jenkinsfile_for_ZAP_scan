@@ -96,7 +96,7 @@ pipeline {
                     defectDojoPublisher(
                         artifact: '${WORKSPACE}/results/zap_xml_report.xml',
                         productName: 'Juice Shop',
-                        scanType: 'ZAP scan',
+                        scanType: 'ZAP Scan',
                         engagementName: 'kosmider.maciej@gmail.com'
                     )
                 }
