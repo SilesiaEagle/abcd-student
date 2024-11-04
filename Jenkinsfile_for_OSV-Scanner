@@ -15,7 +15,14 @@ pipeline {
             }
         }
 
-
+        stage('Install Dependencies') {
+                    steps {
+                        script {
+                            // Uruchomienie npm install, aby pobrać zależności
+                            sh 'npm install'
+                        }
+                    }
+                }
 
         stage('Run Dependency Check') {
             steps {
