@@ -14,27 +14,11 @@ pipeline {
                 }
             }
         }
-        stage('Install OSV-Scanner') {
+        stage('Find package-lock.json') {
             steps {
-                sh 'curl -sSL https://osv-vulnerabilities.storage.googleapis.com/linux/all.zip | tar -xz -C /usr/local/bin'
-            }
-        }
-
-        stage('Verify OSV-Scanner') {
-            steps {
-                sh 'osv-scanner --version'
-            }
-        }
-
-        stage('Run OSV-Scanner') {
-            steps {
-                sh 'osv-scanner -l path/to/package-lock.json > osv-report.json'
-            }
-        }
-
-        stage('Archive Report') {
-            steps {
-                archiveArtifacts artifacts: 'osv-report.json', allowEmptyArchive: true
+                script {
+                    sh 'find . -name "package-lock.json"'
+                }
             }
         }
     }
