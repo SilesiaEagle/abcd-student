@@ -15,36 +15,36 @@ pipeline {
             }
         }
 
-        stage('Run Dependency Check') {
+       stages {
+        stage('Run OSV-Scanner') {
             steps {
                 script {
-                    // Uruchamiamy Dependency Check na pliku package-lock.json
+                    // Uruchomienie OSV-Scanner na pliku package-lock.json i zapisanie wyniku w formacie JSON
                     sh '''
                         cd ${WORKSPACE}
                         pwd
                         mkdir results
-                        /tmp/dependency-check/dependency-check/bin/dependency-check.sh \
-                        --disableNodeJS \
-                        --scan ./package-lock.json \
-                        --format XML \
-                        --out ${WORKSPACE}/results
+                        osv-scanner -l ./package-lock.json > ${WORKSPACE}/results/osv-report.json
                     '''
                 }
             }
+        }
 
-            post {
-                always {
-                    echo 'Archiving results'
-                    archiveArtifacts artifacts: 'results/**/*',
-                        allowEmptyArchive: true,
-                        fingerprint: true,
-                        onlyIfSuccessful: true
+        stage('Archive OSV-Scanner Report') {
+            steps {
+                // Archiwizacja raportu JSON jako artefakt w Jenkinsie
+                archiveArtifacts artifacts: '${WORKSPACE}/results/osv-report.json', allowEmptyArchive: false
+            }
+        }
 
-                    echo 'Sending results'
+        stage('Upload OSV-Scanner Report to DefectDojo') {
+            steps {
+                script {
+                    // Przesłanie raportu do DefectDojo
                     defectDojoPublisher(
-                        artifact: '${WORKSPACE}/results/dependency-check-report.xml',
-                        productName: 'Juice Shop / MacKos / OWASP Dependency Check Scan',
-                        scanType: 'Dependency Check Scan',
+                        artifact: '${WORKSPACE}/osv-report.json',
+                        productName: 'Juice Shop / MacKos / OSV Scan',
+                        scanType: 'OSV Scan', 
                         engagementName: 'kosmider.maciej@gmail.com'
                     )
                 }
