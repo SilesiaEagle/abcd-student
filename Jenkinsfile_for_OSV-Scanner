@@ -32,7 +32,7 @@ pipeline {
                 script {
                     // Uruchamiamy Dependency Check na pliku package-lock.json
                     sh '''
-                        /tmp/dependency-check/bin/dependency-check.sh \
+                        /tmp/dependency-check/dependency-check/bin/dependency-check.sh \
                         --project "Test Application" \
                         --scan ./package-lock.json \
                         --out dependency-check-report
