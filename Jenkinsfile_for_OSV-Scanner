@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout(true)
+    }
+    stages {
+        stage('Code checkout from GitHub') {
+            steps {
+                script {
+                    cleanWs()
+                    git credentialsId: '236c5fa7-2164-4a22-bdeb-3abd1be1d7ed', \
+                    url: 'https://github.com/SilesiaEagle/abcd-student', \
+                    branch: 'main'
+                }
+            }
+        }
+        stage('Install OSV-Scanner') {
+            steps {
+                sh 'curl -sSL https://github.com/google/osv-scanner/releases/latest/download/osv-scanner_$(uname -s)_$(uname -m).tar.gz | tar -xz -C /usr/local/bin'
+            }
+        }
+
+        stage('Verify OSV-Scanner') {
+            steps {
+                sh 'osv-scanner --version'
+            }
+        }
+
+        stage('Run OSV-Scanner') {
+            steps {
+                sh 'osv-scanner -l path/to/package-lock.json > osv-report.json'
+            }
+        }
+
+        stage('Archive Report') {
+            steps {
+                archiveArtifacts artifacts: 'osv-report.json', allowEmptyArchive: true
+            }
+        }
+    }
+}
+
