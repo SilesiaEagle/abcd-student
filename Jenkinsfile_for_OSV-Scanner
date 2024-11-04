@@ -23,7 +23,7 @@ pipeline {
                         cd ${WORKSPACE}
                         pwd
                         mkdir results
-                        osv-scanner --format json -L ./package-lock.json > ${WORKSPACE}/results/file.json || true
+                        osv-scanner --format json -L ./package-lock.json > results/file.json || true
                     '''
                 }
             }
@@ -32,7 +32,7 @@ pipeline {
         stage('Archive OSV-Scanner Report') {
             steps {
                 // Archiwizacja raportu JSON jako artefakt w Jenkinsie
-                archiveArtifacts artifacts: '${WORKSPACE}/results/file.json', allowEmptyArchive: false
+                archiveArtifacts artifacts: 'results/file.json', allowEmptyArchive: false
             }
         }
 
@@ -41,7 +41,7 @@ pipeline {
                 script {
                     // Przesłanie raportu do DefectDojo
                     defectDojoPublisher(
-                        artifact: '${WORKSPACE}/results/file.json',
+                        artifact: 'results/file.json',
                         productName: 'Juice Shop / MacKos / OSV Scan',
                         scanType: 'OSV Scan',
                         engagementName: 'kosmider.maciej@gmail.com'
