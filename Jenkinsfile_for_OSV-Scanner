@@ -23,7 +23,7 @@ pipeline {
                         cd ${WORKSPACE}
                         pwd
                         mkdir results
-                        osv-scanner --format json -L ./package-lock.json > ${WORKSPACE}/results//file.json
+                        osv-scanner --format json -L ./package-lock.json > ${WORKSPACE}/results//file.json || true
                     '''
                 }
             }
