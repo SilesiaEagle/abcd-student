@@ -15,7 +15,6 @@ pipeline {
             }
         }
 
-       stages {
         stage('Run OSV-Scanner') {
             steps {
                 script {
@@ -44,7 +43,7 @@ pipeline {
                     defectDojoPublisher(
                         artifact: '${WORKSPACE}/osv-report.json',
                         productName: 'Juice Shop / MacKos / OSV Scan',
-                        scanType: 'OSV Scan', 
+                        scanType: 'OSV Scan',
                         engagementName: 'kosmider.maciej@gmail.com'
                     )
                 }
