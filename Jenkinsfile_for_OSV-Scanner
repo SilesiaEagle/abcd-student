@@ -53,7 +53,7 @@ pipeline {
                     defectDojoPublisher(
                         artifact: '${WORKSPACE}/results/dependency-check-report.xml',
                         productName: 'Juice Shop / MacKos / OWASP Dependeny Check',
-                        scanType: 'ZAP Scan',
+                        scanType: 'Dependency Check',
                         engagementName: 'kosmider.maciej@gmail.com'
                     )
                 }
