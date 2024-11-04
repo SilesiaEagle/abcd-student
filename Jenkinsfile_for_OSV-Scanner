@@ -33,7 +33,7 @@ pipeline {
                         pwd
                         mkdir results
                         /tmp/dependency-check/dependency-check/bin/dependency-check.sh \
-                        --project "Test Application" \
+                        --disableNodeJS
                         --scan ./package-lock.json \
                         --format XML \
                         --out ${WORKSPACE}/results
