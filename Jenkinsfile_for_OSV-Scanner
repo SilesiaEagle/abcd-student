@@ -14,11 +14,37 @@ pipeline {
                 }
             }
         }
-        stage('Find package-lock.json') {
+
+        stage('Install OWASP Dependency Check') {
             steps {
                 script {
-                    sh 'find . -name "package-lock.json"'
+                    // Pobieramy OWASP Dependency Check i rozpakowujemy do katalogu
+                    sh '''
+                        wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.3.1/dependency-check-8.3.1-release.zip -O /tmp/dependency-check.zip
+                        unzip /tmp/dependency-check.zip -d /tmp/dependency-check
+                    '''
                 }
+            }
+        }
+
+        stage('Run Dependency Check') {
+            steps {
+                script {
+                    // Uruchamiamy Dependency Check na pliku package-lock.json
+                    sh '''
+                        /tmp/dependency-check/bin/dependency-check.sh \
+                        --project "Test Application" \
+                        --scan path/to/package-lock.json \
+                        --out dependency-check-report
+                    '''
+                }
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                // Archiwizujemy wygenerowane raporty
+                archiveArtifacts artifacts: 'dependency-check-report/*', allowEmptyArchive: true
             }
         }
     }
