@@ -23,7 +23,7 @@ pipeline {
                         cd ${WORKSPACE}
                         pwd
                         mkdir results
-                        osv-scanner --lockfile=./package-lock.json > ${WORKSPACE}/results/osv-report.json
+                        osv-scanner --lockfile=./package-lock.json -format json ${WORKSPACE}/results/
                     '''
                 }
             }
@@ -41,7 +41,7 @@ pipeline {
                 script {
                     // Przesłanie raportu do DefectDojo
                     defectDojoPublisher(
-                        artifact: '${WORKSPACE}/osv-report.json',
+                        artifact: '${WORKSPACE}/results/osv-report.json',
                         productName: 'Juice Shop / MacKos / OSV Scan',
                         scanType: 'OSV Scan',
                         engagementName: 'kosmider.maciej@gmail.com'
