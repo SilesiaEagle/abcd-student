@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout(true)
+    }
+    stages {
+        stage('Code checkout from GitHub') {
+            steps {
+                script {
+                    cleanWs()
+                    git credentialsId: '236c5fa7-2164-4a22-bdeb-3abd1be1d7ed', \
+                    url: 'https://github.com/SilesiaEagle/abcd-student', \
+                    branch: 'main'
+                }
+            }
+        }
+
+        stage('Run Dependency Check') {
+            steps {
+                script {
+                    // Uruchamiamy Dependency Check na pliku package-lock.json
+                    sh '''
+                        cd ${WORKSPACE}
+                        pwd
+                        mkdir results
+                        /tmp/dependency-check/dependency-check/bin/dependency-check.sh \
+                        --disableNodeJS \
+                        --scan ./package-lock.json \
+                        --format XML \
+                        --out ${WORKSPACE}/results
+                    '''
+                }
+            }
+
+            post {
+                always {
+                    echo 'Archiving results'
+                    archiveArtifacts artifacts: 'results/**/*',
+                        allowEmptyArchive: true,
+                        fingerprint: true,
+                        onlyIfSuccessful: true
+
+                    echo 'Sending results'
+                    defectDojoPublisher(
+                        artifact: '${WORKSPACE}/results/dependency-check-report.xml',
+                        productName: 'Juice Shop / MacKos / OWASP Dependency Check Scan',
+                        scanType: 'Dependency Check Scan',
+                        engagementName: 'kosmider.maciej@gmail.com'
+                    )
+                }
+            }
+        }
+    }
+}
