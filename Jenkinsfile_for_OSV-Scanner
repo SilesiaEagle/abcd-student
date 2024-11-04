@@ -44,7 +44,7 @@ pipeline {
 
                     echo 'Sending results'
                     defectDojoPublisher(
-                        artifact: '${WORKSPACE}/results/results.xml',
+                        artifact: '${WORKSPACE}/results/dependency-check-report.xml',
                         productName: 'Juice Shop / MacKos / OWASP Dependeny Check',
                         scanType: 'ZAP Scan',
                         engagementName: 'kosmider.maciej@gmail.com'
