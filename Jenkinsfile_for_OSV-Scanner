@@ -23,7 +23,7 @@ pipeline {
                         cd ${WORKSPACE}
                         pwd
                         mkdir results
-                        osv-scanner -l ./package-lock.json > ${WORKSPACE}/results/osv-report.json
+                        osv-scanner --lockfile=./package-lock.json > ${WORKSPACE}/results/osv-report.json
                     '''
                 }
             }
