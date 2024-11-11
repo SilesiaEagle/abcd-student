@@ -24,6 +24,7 @@ pipeline {
                         pwd
                         mkdir results
                         trufflehog filesystem ${WORKSPACE} --json > results/trufflehog_results.json || true
+                        ls results
                     '''
                 }
             }
