@@ -42,8 +42,8 @@ pipeline {
                     // Przesłanie raportu do DefectDojo
                     defectDojoPublisher(
                         artifact: 'results/semgrep_results.json',
-                        productName: 'Juice Shop / MacKos / Semgrep Scan',
-                        scanType: 'Semgrep Scan',
+                        productName: 'Juice Shop / MacKos / Semgrep JSON Report',
+                        scanType: 'Semgrep JSON Report',
                         engagementName: 'kosmider.maciej@gmail.com'
                     )
                 }
