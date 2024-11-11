@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout(true)
+    }
+    stages {
+        stage('Code checkout from GitHub') {
+            steps {
+                script {
+                    cleanWs()
+                    git credentialsId: '236c5fa7-2164-4a22-bdeb-3abd1be1d7ed', \
+                    url: 'https://github.com/SilesiaEagle/abcd-student', \
+                    branch: 'main'
+                }
+            }
+        }
+
+        stage('Run TruffleHog Scan') {
+            steps {
+                script {
+                    // Uruchomienie TruffleHog i zapisanie wyników do pliku JSON
+                    sh '''
+                        cd ${WORKSPACE}
+                        pwd
+                        mkdir results
+                        trufflehog filesystem ${WORKSPACE} --json > results/trufflehog_results.json || true
+                    '''
+                }
+            }
+        }
+
+        stage('Archive TruffleHog Report') {
+            steps {
+                // Archiwizacja raportu TruffleHog jako artefakt w Jenkinsie
+                archiveArtifacts artifacts: 'results/trufflehog_results.json', allowEmptyArchive: false
+            }
+        }
+
+        stage('Upload TruffleHog Report to DefectDojo') {
+            steps {
+                script {
+                    // Przesłanie raportu do DefectDojo
+                    defectDojoPublisher(
+                        artifact: 'results/trufflehog_results.json',
+                        productName: 'Juice Shop / MacKos / TruffleHog Scan',
+                        scanType: 'TruffleHog Scan',
+                        engagementName: 'kosmider.maciej@gmail.com'
+                    )
+                }
+            }
+        }
+    }
+}
