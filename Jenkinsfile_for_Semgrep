@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    options {
+        skipDefaultCheckout(true)
+    }
+    stages {
+        stage('Code checkout from GitHub') {
+            steps {
+                script {
+                    cleanWs()
+                    git credentialsId: '236c5fa7-2164-4a22-bdeb-3abd1be1d7ed', \
+                    url: 'https://github.com/SilesiaEagle/abcd-student', \
+                    branch: 'main'
+                }
+            }
+        }
+
+        stage('Run Semgrep Scan') {
+            steps {
+                script {
+                    // Uruchomienie Semgrep i zapisanie wyników w formacie JSON
+                    sh '''
+                        cd ${WORKSPACE}
+                        pwd
+                        mkdir results
+                        semgrep --config=auto --json > results/semgrep_results.json || true
+                    '''
+                }
+            }
+        }
+
+        stage('Archive Semgrep Report') {
+            steps {
+                // Archiwizacja raportu Semgrep jako artefakt w Jenkinsie
+                archiveArtifacts artifacts: 'results/semgrep_results.json', allowEmptyArchive: false
+            }
+        }
+
+        stage('Upload Semgrep Report to DefectDojo') {
+            steps {
+                script {
+                    // Przesłanie raportu do DefectDojo
+                    defectDojoPublisher(
+                        artifact: 'results/semgrep_results.json',
+                        productName: 'Juice Shop / MacKos / Semgrep Scan',
+                        scanType: 'Semgrep Scan',
+                        engagementName: 'kosmider.maciej@gmail.com'
+                    )
+                }
+            }
+        }
+    }
+}
